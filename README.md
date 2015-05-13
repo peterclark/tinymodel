@@ -5,7 +5,7 @@ Simple models for Meteor
 
 ## Usage
 
-1. Define a class that extents from TinyModel
+1. Define a class that extends from TinyModel
 2. Define the constructor as in the example below.
 3. Add validation, class and instance methods.
 
