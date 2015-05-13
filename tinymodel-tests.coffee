@@ -11,12 +11,9 @@ class @Mutant extends TinyModel
       @error('name', 'Mutant name is too short')
 
 
-# clear out the collection
+# Database Setup
 Mutant.remove( {} )
 
-########################
-# Insert a valid TinyModel
-########################
 Mutant.insert name: 'Storm'
 Mutant.insert name: 'Bo'
 Mutant.insert name: 'Wolverine'
@@ -25,6 +22,9 @@ Mutant.insert name: 'Magneto'
 
 storm = Mutant.findOne name: 'Storm'
 
+########################
+# Insert a valid TinyModel
+########################
 Tinytest.add 'TinyModel.insert (valid) - sets parameters', (test) ->
   test.equal storm.name, 'Storm'
   
@@ -138,6 +138,9 @@ Tinytest.add 'TinyModel.count - returns count', (test) ->
   test.equal count, 4
   
 Tinytest.add 'TinyModel.count (with query) - returns count', (test) ->
+  Mutant.remove({})
+  Mutant.insert(name: 'Magneto')
+  Mutant.insert(name: 'Storm')
   count = Mutant.count( name: /to/ )
   test.equal count, 2
 
@@ -166,16 +169,93 @@ Tinytest.add 'TinyModel.clone( tm ) - is not persisted', (test) ->
 # Remove a TinyModel
 #####################
 Tinytest.add 'TinyModel.remove (with query) - destroys the Mutant', (test) ->
+  Mutant.remove({})
+  Mutant.insert( name: 'Magneto' )
   Mutant.remove( name: 'Magneto' )
   test.isUndefined Mutant.findOne( name: 'Magneto' )
   
 Tinytest.add 'TinyModel.remove (with query) - returns count', (test) ->
+  Mutant.remove({})
+  Mutant.insert( name: 'Wolverine' )
   count = Mutant.remove( name: 'Wolverine' )
   test.equal count, 1
   
 Tinytest.add 'TinyModel.remove( {} ) - destroys all Mutants', (test) ->
   count = Mutant.remove( {} )
   test.equal Mutant.all(), []
+  
+#####################
+# Insert a TinyModel
+#####################
+  
+Tinytest.add 'insert - inserts a Mutant', (test) ->
+  Mutant.remove( {} )
+  mutant = new Mutant
+  mutant.name = 'Cyclops'
+  mutant.insert()
+  test.equal Mutant.count(), 1
+  
+Tinytest.add 'insert - returns an id', (test) ->
+  Mutant.remove( {} )
+  mutant = new Mutant
+  mutant.name = 'Cyclops'
+  id = mutant.insert()
+  test.matches id, /\S{17,}/
+  
+Tinytest.add 'insert - sets timestamps', (test) ->
+  Mutant.remove( {} )
+  mutant = new Mutant
+  mutant.name = 'Cyclops'
+  id = mutant.insert()
+  test.instanceOf mutant.createdAt, Date
+  test.instanceOf mutant.updatedAt, Date
+  
+Tinytest.add 'insert (invalid) - returns false', (test) ->
+  Mutant.remove( {} )
+  mutant = new Mutant
+  mutant.name = 'Bo'
+  id = mutant.insert()
+  test.isFalse id
+  
+Tinytest.add 'insert (invalid) - does not set timestamps', (test) ->
+  Mutant.remove( {} )
+  mutant = new Mutant
+  mutant.name = 'Bo'
+  id = mutant.insert()
+  test.isUndefined mutant.createdAt
+  test.isUndefined mutant.updatedAt
+  
+Tinytest.add 'insert (persisted) - only updates updatedAt', (test) ->
+  Mutant.remove( {} )
+  mutant = new Mutant
+  mutant.name = 'Cyclops'
+  id = mutant.insert()
+  oldUpdatedAt = mutant.updatedAt
+  oldCreatedAt = mutant.createdAt
+  mutant.name = 'Gambit'
+  mutant.insert()
+  test.isTrue mutant.updatedAt > oldUpdatedAt
+  test.isTrue mutant.createdAt == oldCreatedAt
+  
+Tinytest.add 'insert (persisted, invalid) - returns false', (test) ->
+  Mutant.remove( {} )
+  mutant = new Mutant
+  mutant.name = 'Cyclops'
+  id = mutant.insert()
+  mutant.name = 'Bo'
+  id = mutant.insert()
+  test.isFalse id
+
+Tinytest.add 'insert (persisted, invalid) - does not persist', (test) ->
+  Mutant.remove( {} )
+  mutant = new Mutant
+  mutant.name = 'Cyclops'
+  id = mutant.insert()
+  mutant.name = 'Bo'
+  id = mutant.insert()
+  test.notEqual Mutant.findOne().name, 'Bo'
+  
+
   
   
   

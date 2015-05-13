@@ -1,22 +1,40 @@
 class @TinyModel
   @collection: undefined
   errors: []
-  
-  # class methods
-  
+    
+  # Intialize the model.
+  #
+  # doc - the model attributes
+  #
+  # Examples
+  #
+  #   Car.new( color: 'blue' )
+  #   # => <Car color: 'blue' ... >
+  #
+  # Returns an array of models 
   @new: (doc={}) ->
-    obj             = new @(doc)
-    obj._id         = doc._id
+    obj            = new @(doc)
+    obj._id        = doc._id
     obj.createdAt  = doc.createdAt
     obj.updatedAt  = doc.updatedAt
     obj
-  
+    
+  # Find all documents that match the selector.
+  #
+  # selector - selection criteria
+  #
+  # Examples
+  #
+  #   Car.find( color: 'red' )
+  #   # => Cursor
+  #
+  # Returns a cursor. Once cursor is iterated, returns models.  
   @find: (selector={}) ->
     options = {}
     options.transform = (doc) => @new( doc )
     @collection.find( selector, options )
     
-  # Public: Find all documents that match the selector and initialize.
+  # Find all documents that match the selector and initialize.
   #
   # selector - selection criteria
   #
@@ -25,14 +43,34 @@ class @TinyModel
   #   Car.all( color: 'blue' )
   #   # => [Car, Car, Car]
   #
-  # Returns an array of objects    
+  # Returns an array of models    
   @all: (selector={}) ->
     @find( selector ).fetch()
-      
+
+  # Find first document that match the selector and initialize.
+  #
+  # selector - selection criteria
+  #
+  # Examples
+  #
+  #   Car.findOne( color: 'blue' )
+  #   # => <Car color: 'blue'...>
+  #
+  # Returns one model       
   @findOne: (selector={}) ->
     doc = @collection.findOne( selector )
     @new( doc ) if doc
-    
+
+  # Inserts a document with given attributes
+  #
+  # params - attributes
+  #
+  # Examples
+  #
+  #   Car.insert( color: 'blue', spoiler: true )
+  #   # => <Car _id: '123', color: 'blue', spoiler: true ...>
+  #
+  # Returns one model     
   @insert: (params={}) ->
     doc = new @( params )
     doc.updatedAt = doc.createdAt = new Date()
@@ -40,16 +78,62 @@ class @TinyModel
     doc._id = @collection.insert( doc )
     doc
 
+  # Remove documents based on selector
+  #
+  # selector - selection criteria
+  #
+  # Examples
+  #
+  #   Car.remove( color: 'blue' )
+  #   # => 1
+  #
+  #   Car.remove( {} )
+  #   # => removes all documents
+  #
+  # Returns number of documents removed 
   @remove: (selector) ->
     @collection.remove( selector )
-        
+    
+  # Find the number of documents in the collection
+  #
+  # selector - selection criteria
+  #
+  # Examples
+  #
+  #   Car.count( color: 'blue' )
+  #   # => 2
+  #
+  #   Car.count()
+  #   # => total count of all documents
+  #
+  # Returns a number         
   @count: (selector={}) ->
     @collection.find( selector ).count()
-    
+
+  # Get name of collection
+  #
+  # Examples
+  #
+  #   Car.toString()
+  #   # => 'cars'
+  #
+  # Returns a string     
   @toString: ->
     @collection._name
     
+  # Taken from - 
   # https://coffeescript-cookbook.github.io/chapters/classes_and_objects/cloning
+  # 
+  # Clone a model
+  #
+  # obj - the object to clone
+  #
+  # Examples
+  #
+  #   Car.clone( car )
+  #   # => <Car color: 'blue'...>
+  #
+  # Returns an unsaved model
   @clone: (obj) ->
     if not obj? or typeof obj isnt 'object'
       return obj
@@ -75,8 +159,16 @@ class @TinyModel
 
     return @new( newInstance )
     
-  # instance methods
-  
+  # Insert this model.
+  #
+  # Examples
+  #
+  #   car = new Car
+  #   car.color = 'blue'
+  #   car.insert()
+  #   # => '123abc'
+  #
+  # Returns the id of the newly created document or false if insert failed
   insert: ->
     if @persisted()
       @update()
@@ -84,7 +176,17 @@ class @TinyModel
       return false unless @isValid()
       @updatedAt = @createdAt = new Date()
       @_id = @constructor.collection.insert( @attributes() )
-      
+
+  # Update this model.
+  #
+  # Examples
+  #
+  #   car = Car.findOne( color: 'blue' )
+  #   car.color = 'red'
+  #   car.update()
+  #   # => 1
+  #
+  # Returns the # of documents updated or false if update failed      
   update: ->
     if @persisted()
       return false unless @isValid()
@@ -92,26 +194,73 @@ class @TinyModel
       @constructor.collection.update( @_id, { $set: @attributes() } )
     else
       false
-  
+
+  # Removes this model.
+  #
+  # Examples
+  #
+  #   car = Car.findOne( color: 'blue' )
+  #   car.remove()
+  #   # => 1
+  #
+  # Returns the # of documents removed 
   remove: ->
     @constructor.collection.remove( @_id )
-      
+
+  # Check if this model is persisted (has an _id).
+  #
+  # Examples
+  #
+  #   car = Car.findOne( color: 'blue' )
+  #   car.persisted()
+  #   # => true
+  #
+  # Returns true if document has an id, false otherwise     
   persisted: ->
     @_id?
-    
+
+  # Validate the model
+  #
+  # Examples
+  #
+  #   car = new Car
+  #   car.color = 'red'
+  #   car.validate()
+  #   # => true
+  #
+  # Returns true if validations pass. Override this in your subclasses.   
   validate: ->
     true
     
+  # Check if this model is valid
+  #
+  # Examples
+  #
+  #   car = new Car
+  #   car.color = 'red'
+  #   car.isValid()
+  #   # => true
+  #
+  # Returns true if model has no errors, false otherwise   
   isValid: ->
     @errors = []
     @validate()
     @errors.length == 0
     
+  # Get the own properties of this model
+  #
+  # Examples
+  #
+  #   car = Car.findOne( color: 'blue' )
+  #   car.attributes()
+  #   # => { color: 'blue' }
+  #
+  # Returns an object with the models attributes   
   attributes: ->
     own   = Object.getOwnPropertyNames( @ )
     props = _.pick( @, own )
     attrs = _.omit( props, '_id' )
-    
+   
   error: (field, message) ->
     @errors ||= []
     e = {}
