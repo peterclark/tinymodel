@@ -72,7 +72,7 @@ or
 
 ```coffee
   storm.canFly = false
-  store.update()
+  storm.update()
 ```
 
 ## Removing
