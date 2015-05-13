@@ -205,7 +205,10 @@ class @TinyModel
   #
   # Returns the # of documents removed 
   remove: ->
-    @constructor.collection.remove( @_id )
+    if @persisted()
+      @constructor.collection.remove( @_id )
+    else
+      false
 
   # Check if this model is persisted (has an _id).
   #
@@ -218,17 +221,7 @@ class @TinyModel
   # Returns true if document has an id, false otherwise     
   persisted: ->
     @_id?
-
-  # Validate the model
-  #
-  # Examples
-  #
-  #   car = new Car
-  #   car.color = 'red'
-  #   car.validate()
-  #   # => true
-  #
-  # Returns true if validations pass. Override this in your subclasses.   
+   
   validate: ->
     true
     
