@@ -5,40 +5,38 @@ Simple models for Meteor
 
 ## Usage
 
-1. Define a class that extends from TinyModel
+1. Define a class that extends from TinyModel.
+2. Define the Meteor collection used by your class.
 2. Define the constructor as in the example below.
 3. Add validation, class and instance methods.
 
 ```coffee
+# Step 1
 class @Mutant extends TinyModel
-  # Tell the model what collection to use.
+  # Step 2
   @collection: new Meteor.Collection('mutants')
   
-  # set passed in params as instance variables
+  # Step 3
   constructor: (params) ->
     for key,value of params
       @[key] = value
   
-  # add validations
+  # Step 4    
   validate: ->
-    unless @name
-      @error('name', 'Mutant name is required')
+    unless @name and @name.length > 3
+      @error('name', 'Mutant name is too short')
       
-  # add class methods
   @evil: ->
     @all( leader: 'Magneto' )
     
   @good: ->
-    @all( leader: 'Professor Xavier' )
+    @all( leader: 'Xavier' )
     
-  # add instance methods
-  
-  fly: ->
-    if @canFly
-      console.log 'Flying...'
-      @isFlying = true
+  attack: ->
+    if @power
+      "#{@power} attack!"
     else
-      console.log 'Unable to fly.'
+      "no power specified"
   
 ```
 
