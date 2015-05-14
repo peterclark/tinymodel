@@ -22,9 +22,7 @@ class @Mutant extends TinyModel
       @[key] = value
   
   # Step 4    
-  validate: ->
-    unless @name and @name.length > 3
-      @error('name', 'Mutant name is too short')
+  @validates 'name', presence: true, length: { in: [5..15] }
       
   @evil: ->
     @all( leader: 'Magneto' )
