@@ -2,13 +2,10 @@
 class @Mutant extends TinyModel
   @collection: new Meteor.Collection('mutants')
   
-  constructor: (params) ->
-    for key,value of params
-      @[key] = value
+  constructor: (params={}) ->
+    { @name, @power, @gender, @leader } = params
       
-  validate: ->
-    unless @name and @name.length > 3
-      @error('name', 'Mutant name is too short')
+  @validates 'name', presence: true, length: { in: [5..15] }
 
 
 # Database Setup
@@ -77,7 +74,7 @@ Tinytest.add 'TinyModel.insert (invalid) - has errors', (test) ->
   
 Tinytest.add 'TinyModel.insert (invalid) - has 1 error message', (test) ->
   bo = Mutant.insert name: 'Bo'
-  test.equal bo.errorMessages(), "Mutant name is too short"
+  test.equal bo.errorMessages(), "length of name must be between 5 and 15"
   
 ###################
 # TinyModel.find()
@@ -357,10 +354,10 @@ Tinytest.add 'isValid (invalid) - returns false', (test) ->
 
 Tinytest.add 'attributes - returns attributes', (test) ->
   Mutant.remove({})
-  Mutant.insert( name: 'Rogue', color: 'green', gender: 'female' )
+  Mutant.insert( name: 'Rogue', leader: 'Xavier', gender: 'female' )
   rogue = Mutant.findOne()
   test.equal rogue.attributes().name, 'Rogue'
-  test.equal rogue.attributes().color, 'green'
+  test.equal rogue.attributes().leader, 'Xavier'
   test.equal rogue.attributes().gender, 'female'
 
 ###################
@@ -387,7 +384,7 @@ Tinytest.add 'errorMessages (invalid) - returns error', (test) ->
   Mutant.remove({})
   mutant = new Mutant
   mutant.isValid()
-  test.equal mutant.errorMessages(), 'Mutant name is too short'
+  test.equal mutant.errorMessages(), 'name is missing, length of name must be between 5 and 15'
 
 Tinytest.add 'errorMessages (valid) - returns empty string', (test) ->
   Mutant.remove({})

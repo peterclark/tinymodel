@@ -17,9 +17,8 @@ class @Mutant extends TinyModel
   @collection: new Meteor.Collection('mutants')
   
   # Step 3
-  constructor: (params) ->
-    for key,value of params
-      @[key] = value
+  constructor: (params={}) ->
+    { @name, @power, @gender, @leader } = params
   
   # Step 4    
   @validates 'name', presence: true, length: { in: [5..15] }
@@ -43,12 +42,12 @@ class @Mutant extends TinyModel
 ```coffee
   storm = new Mutant
   storm.name = 'Storm'
-  storm.canFly = true
+  storm.leader = 'Xavier'
   storm.insert()
 
   # or
   
-  Mutant.insert( name: 'Storm', canFly: true )
+  Mutant.insert( name: 'Storm', leader: 'Xavier' )
 ```
 
 ## Finding
@@ -56,16 +55,16 @@ class @Mutant extends TinyModel
 ```coffee
   mutant = Mutant.findOne( name: 'Storm' )
   # => <Mutant name: 'Storm'...>
-  mutants = Mutant.find( canFly: true )
+  mutants = Mutant.find( gender: 'female' )
   # => <Cursor>
-  mutants = Mutant.all( canFly: true )
+  mutants = Mutant.all( gender: 'female' )
   # => [<Mutant>, <Mutant>, ...]
 ```
 
 ## Updating
 
 ```coffee
-  storm.canFly = false
+  storm.power = 'weather control'
   storm.update()
 ```
 
@@ -111,7 +110,7 @@ class @Mutant extends TinyModel
   cyclops.errors
   # => [ { name: 'Mutant name is required' }]
   cyclops.errorMessages()
-  # => 'Mutant name is required'
+  # => 'name is missing, length of name must be between 5 and 15'
 ```
 
 ## Clone/Copy

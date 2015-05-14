@@ -12,7 +12,7 @@ class @TinyModel
   #   Car.new( color: 'blue' )
   #   # => <Car color: 'blue' ... >
   #
-  # Returns an array of models 
+  # Returns a model 
   @new: (doc={}) ->
     obj            = new @(doc)
     obj._id        = doc._id
