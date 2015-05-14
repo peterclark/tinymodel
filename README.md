@@ -47,11 +47,9 @@ class @Mutant extends TinyModel
   storm.name = 'Storm'
   storm.canFly = true
   storm.insert()
-```
 
-or
-
-```coffee
+  # or
+  
   Mutant.insert( name: 'Storm', canFly: true )
 ```
 
@@ -77,10 +75,9 @@ or
 
 ```coffee
   storm.remove()
-```
-or
 
-```coffee
+  # or
+  
   Mutant.remove( name: 'Storm' )
 ```
 
@@ -89,7 +86,7 @@ or
 ```coffee
   Mutant.count()
   # => 2
-  Mutatn.count( canFly: true )
+  Mutant.count( canFly: true )
   # => 1
 ```
 
@@ -109,14 +106,12 @@ or
 
 ```coffee
   cyclops = new Mutant
-  cyclops.validate()
-  # => 1
+  cyclops.isValid()
+  # => false
   cyclops.hasErrors()
   # => true
   cyclops.errors
   # => [ { name: 'Mutant name is required' }]
-  cyclops.isValid()
-  # => false
   cyclops.errorMessages()
   # => 'Mutant name is required'
 ```

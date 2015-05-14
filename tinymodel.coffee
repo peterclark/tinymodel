@@ -221,7 +221,8 @@ class @TinyModel
   # Returns true if document has an id, false otherwise     
   persisted: ->
     @_id?
-   
+  
+  # Override in sub classes to perform validations 
   validate: ->
     true
     
@@ -253,23 +254,27 @@ class @TinyModel
     own   = Object.getOwnPropertyNames( @ )
     props = _.pick( @, own )
     attrs = _.omit( props, '_id' )
-   
+  
+  # Add an error to this model 
   error: (field, message) ->
     @errors ||= []
     e = {}
     e[field] = message
     @errors.push e
-    
+  
+  # Check if any errors  
   hasErrors: ->
     @errors.length > 0
-    
+  
+  # Return string of error messages  
   errorMessages: ->
     msg = []
     for i in @errors
       for key, value of i
         msg.push value
     msg.join(', ')
-    
+  
+  # Create un-persisted copy of this model.  
   copy: (obj) ->
     @constructor.clone( @ )
     
