@@ -1,5 +1,6 @@
 class @TinyModel
   @collection: undefined
+  @validators: []
   errors: []
     
   # Intialize the model.
@@ -18,6 +19,14 @@ class @TinyModel
     obj.createdAt  = doc.createdAt
     obj.updatedAt  = doc.updatedAt
     obj
+    
+  @validates: (field, validations) ->
+    for validator, condition of validations
+      switch validator
+        when 'presence'
+          @validators.push new PresenceValidator(field, condition)
+        when 'length'
+          @validators.push new LengthValidator(field, condition)
     
   # Find all documents that match the selector.
   #
@@ -121,7 +130,7 @@ class @TinyModel
   @toString: ->
     @collection._name
     
-  # Taken from - 
+  # Modified from - 
   # https://coffeescript-cookbook.github.io/chapters/classes_and_objects/cloning
   # 
   # Clone a model
@@ -222,9 +231,10 @@ class @TinyModel
   persisted: ->
     @_id?
   
-  # Override in sub classes to perform validations 
+  # Runs all validators on this model   
   validate: ->
-    true
+    val.run(@) for val in @constructor.validators
+    @errors.length == 0
     
   # Check if this model is valid
   #
@@ -239,7 +249,6 @@ class @TinyModel
   isValid: ->
     @errors = []
     @validate()
-    @errors.length == 0
     
   # Get the own properties of this model
   #
@@ -254,27 +263,23 @@ class @TinyModel
     own   = Object.getOwnPropertyNames( @ )
     props = _.pick( @, own )
     attrs = _.omit( props, '_id' )
-  
-  # Add an error to this model 
+   
   error: (field, message) ->
     @errors ||= []
     e = {}
     e[field] = message
     @errors.push e
-  
-  # Check if any errors  
+    
   hasErrors: ->
     @errors.length > 0
-  
-  # Return string of error messages  
+    
   errorMessages: ->
     msg = []
     for i in @errors
       for key, value of i
         msg.push value
     msg.join(', ')
-  
-  # Create un-persisted copy of this model.  
+    
   copy: (obj) ->
     @constructor.clone( @ )
     
