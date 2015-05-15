@@ -9,10 +9,11 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
   api.use(['underscore', 'coffeescript'], ['server'])
-  api.addFiles(['tinymodel.coffee', 'presence_validator.coffee', 'length_validator.coffee'], ['server']);
+  api.addFiles(
+    [ 'tinymodel.coffee', 'presence_validator.coffee', 'length_validator.coffee', 'exclusion_validator.coffee', 'format_validator.coffee' ], ['server']);
 });
 
 Package.onTest(function(api) {
   api.use(['tinytest', 'peterclark:tinymodel', 'coffeescript', 'underscore'], ['server']);
-  api.addFiles(['tinymodel-tests.coffee', 'presence_validator.coffee', 'length_validator.coffee'], ['server']);
+  api.addFiles(['tinymodel-tests.coffee', 'presence_validator.coffee', 'length_validator.coffee', 'exclusion_validator.coffee', 'format_validator.coffee'], ['server']);
 });
