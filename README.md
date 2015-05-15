@@ -20,8 +20,11 @@ class @Mutant extends TinyModel
   constructor: (params={}) ->
     { @name, @power, @gender, @leader } = params
   
-  # Step 4    
+  # Step 4
+    
   @validates 'name', presence: true, length: { in: [5..15] }
+  @validates 'power', exclusion: { in: ['omnipotent'] }
+  @validates 'gender', format: { with: /^(male|female)$/ }
       
   @evil: ->
     @all( leader: 'Magneto' )
@@ -42,12 +45,14 @@ class @Mutant extends TinyModel
 ```coffee
   storm = new Mutant
   storm.name = 'Storm'
+  storm.gender = 'female'
+  storm.power = 'weather control'
   storm.leader = 'Xavier'
   storm.insert()
 
   # or
   
-  Mutant.insert( name: 'Storm', leader: 'Xavier' )
+  Mutant.insert( name: 'Storm', leader: 'Xavier', gender: 'female', power: 'weather control' )
 ```
 
 ## Finding
@@ -64,7 +69,7 @@ class @Mutant extends TinyModel
 ## Updating
 
 ```coffee
-  storm.power = 'weather control'
+  storm.power = 'lightning'
   storm.update()
 ```
 
@@ -83,7 +88,7 @@ class @Mutant extends TinyModel
 ```coffee
   Mutant.count()
   # => 2
-  Mutant.count( canFly: true )
+  Mutant.count( gender: 'female' )
   # => 1
 ```
 
@@ -91,7 +96,7 @@ class @Mutant extends TinyModel
 
 ```coffee
   magneto = new Mutant
-  magneto.name = 'Magneto'
+  magneto.name = 'Magneto' #...
   magneto.persisted()
   # => false
   magneto.insert()
@@ -108,9 +113,9 @@ class @Mutant extends TinyModel
   cyclops.hasErrors()
   # => true
   cyclops.errors
-  # => [ { name: 'Mutant name is required' }]
+  # => [ { name: 'Mutant name is required' }...]
   cyclops.errorMessages()
-  # => 'name is missing, length of name must be between 5 and 15'
+  # => 'name is missing, length of name must be between 5 and 15...'
 ```
 
 ## Clone/Copy
