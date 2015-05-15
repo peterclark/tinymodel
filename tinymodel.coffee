@@ -27,6 +27,10 @@ class @TinyModel
           @validators.push new PresenceValidator(field, condition)
         when 'length'
           @validators.push new LengthValidator(field, condition)
+        when 'exclusion'
+          @validators.push new ExclusionValidator(field, condition)
+        when 'format'
+          @validators.push new FormatValidator(field, condition)
     
   # Find all documents that match the selector.
   #
@@ -249,6 +253,10 @@ class @TinyModel
   isValid: ->
     @errors = []
     @validate()
+    
+  isInvalid: ->
+    @errors = []
+    not @validate()
     
   # Get the own properties of this model
   #
