@@ -1,4 +1,4 @@
-TinyModel
+TinyModel [![Build Status](https://travis-ci.org/peterclark/tinymodel.svg?branch=master)](https://travis-ci.org/peterclark/tinymodel)
 =========
 
 Simple models for Meteor
