@@ -13,15 +13,15 @@ Simple models for Meteor
 ```coffee
 # Step 1
 class @Mutant extends TinyModel
+  
   # Step 2
   @collection: new Meteor.Collection('mutants')
   
   # Step 3
   constructor: (params={}) ->
     { @name, @power, @gender, @leader } = params
-  
-  # Step 4
     
+  # Step 4  
   @validates 'name', presence: true, length: { in: [5..15] }
   @validates 'power', exclusion: { in: ['omnipotent'] }
   @validates 'gender', format: { with: /^(male|female)$/ }
