@@ -1,6 +1,6 @@
 Package.describe({
   name: 'peterclark:tinymodel',
-  version: '0.0.1',
+  version: '0.0.2',
   summary: 'Tiny models for Meteor',
   git: 'https://github.com/peterclark/tinymodel',
   documentation: 'README.md'
@@ -8,9 +8,9 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
-  api.use(['underscore', 'coffeescript'], ['server'])
+  api.use(['underscore', 'coffeescript'], ['client', 'server'])
   api.addFiles(
-    [ 'tinymodel.coffee', 'presence_validator.coffee', 'length_validator.coffee', 'exclusion_validator.coffee', 'format_validator.coffee' ], ['server']);
+    [ 'tinymodel.coffee', 'presence_validator.coffee', 'length_validator.coffee', 'exclusion_validator.coffee', 'format_validator.coffee' ], ['client', 'server']);
 });
 
 Package.onTest(function(api) {
