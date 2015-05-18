@@ -1,6 +1,5 @@
 class @TinyModel
   @collection: undefined
-  @validators: []
   errors: []
     
   # Intialize the model.
@@ -21,6 +20,10 @@ class @TinyModel
     obj
     
   @validates: (field, validations) ->
+    # defining @validators class variable here instead of
+    # above so that @validators is shared between instances
+    # of the same subclass but not shared between all TinyModels
+    @validators or= []
     for validator, condition of validations
       switch validator
         when 'presence'
@@ -237,6 +240,7 @@ class @TinyModel
   
   # Runs all validators on this model   
   validate: ->
+    @constructor.validators or= []
     val.run(@) for val in @constructor.validators
     @errors.length == 0
     
