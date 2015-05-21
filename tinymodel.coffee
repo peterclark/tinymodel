@@ -1,3 +1,5 @@
+app = @
+
 class @TinyModel
   @collection: undefined
   errors: []
@@ -34,7 +36,27 @@ class @TinyModel
           @validators.push new ExclusionValidator(field, condition)
         when 'format'
           @validators.push new FormatValidator(field, condition)
-    
+  
+  @has: (options={}) ->
+    # belongs_to relationship
+    if options.a? and options.of_class?
+      method_name     = options.a
+      class_name      = options.of_class
+      belongs_to_id   = "#{method_name}_id"
+      # add an instance method named method_name to the class that
+      # has the @has declaration in it.
+      @::[method_name] = do( class_name, belongs_to_id ) ->
+        () -> app[class_name].findOne( _id: @[belongs_to_id] )
+    # has_many relationship    
+    else if options.many? and options.of_class?
+      method_name     = options.many
+      class_name      = options.of_class
+      has_many_id     = "#{@name.toLowerCase()}_id"
+      @::[method_name] = do( class_name, has_many_id ) ->
+        (selector={}) -> 
+          selector[has_many_id] = @_id
+          app[class_name].all( selector )
+      
   # Find all documents that match the selector.
   #
   # selector - selection criteria

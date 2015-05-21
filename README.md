@@ -7,8 +7,10 @@ Simple models for Meteor
 
 1. Define a class that extends from TinyModel.
 2. Define the Meteor collection used by your class.
-2. Define the constructor as in the example below.
-3. Add validation, class and instance methods.
+3. Define the constructor as in the example below.
+4. Add validations
+5. Add relationships
+6. Add custom class and instance methods
 
 ```coffee
 # Step 1
@@ -19,25 +21,56 @@ class @Mutant extends TinyModel
   
   # Step 3
   constructor: (params={}) ->
-    { @name, @power, @gender, @leader } = params
+    { @name, @power, @gender, @leader, @team_id } = params
     
   # Step 4  
   @validates 'name', presence: true, length: { in: [5..15] }
   @validates 'power', exclusion: { in: ['omnipotent'] }
   @validates 'gender', format: { with: /^(male|female)$/ }
+  
+  # Step 5
+  @has a: 'team', of_class: 'Team'
       
-  @evil: ->
-    @all( leader: 'Magneto' )
+  # Step 6
+  @male: ->
+    @all( gender: 'male' )
     
-  @good: ->
-    @all( leader: 'Xavier' )
+  @female: ->
+    @all( gender: 'female' )
     
   attack: ->
     if @power
       "#{@power} attack!"
     else
       "no power specified"
+      
+class @Team extends TinyModel
+  @collection: new Meteor.Collection('teams')
   
+  constructor: (params={}) ->
+    { @name, @leader } = params
+    
+  @has many: 'mutants', of_class: 'Mutant'
+  
+  @evil: ->
+    @findOne( leader: 'Magneto' )
+    
+  @good: ->
+    @findOne( leader: 'Professor Xavier' )
+  
+```
+## Example
+
+```coffee
+  xmen        = Team.insert( name: 'X-Men', leader: 'Professor Xavier' )
+  brotherhood = Team.insert( name: 'Brotherhood of Mutants', leader: 'Magneto' )
+  wolverine   = Mutant.insert( name: 'Wolverine', gender: 'male', team_id: xmen._id )
+  
+  xmen.mutants()
+  # => [<Mutant name: 'Wolverine'...>]
+  
+  wolverine.team()
+  # => <Team name: 'X-Men'...>
 ```
 
 ## Inserting
