@@ -36,6 +36,10 @@ class @TinyModel
           @validators.push new ExclusionValidator(field, condition)
         when 'format'
           @validators.push new FormatValidator(field, condition)
+        when 'inclusion'
+          @validators.push new InclusionValidator(field, condition)
+        when 'numericality'
+          @validators.push new NumericalityValidator(field, condition)
   
   @has: (options={}) ->
     # belongs_to relationship
