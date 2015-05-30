@@ -1,6 +1,6 @@
 Package.describe({
   name: 'peterclark:tinymodel',
-  version: '0.0.4',
+  version: '0.0.5',
   summary: 'Tiny models for Meteor',
   git: 'https://github.com/peterclark/tinymodel',
   documentation: 'README.md'

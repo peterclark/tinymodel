@@ -1,16 +1,16 @@
 TinyModel [![Build Status](https://travis-ci.org/peterclark/tinymodel.svg?branch=master)](https://travis-ci.org/peterclark/tinymodel)
 =========
 
-Simple models for Meteor
+Tiny models for Meteor
 
 ## Usage
 
 1. Define a class that extends from TinyModel.
 2. Define the Meteor collection used by your class.
-3. Define the constructor as in the example below.
-4. Add validations
-5. Add relationships
-6. Add custom class and instance methods
+3. Define document fields
+3. Add validations
+4. Add relationships
+5. Add custom class and instance methods
 
 ```coffee
 # Step 1
@@ -18,12 +18,13 @@ class @Mutant extends TinyModel
   
   # Step 2
   @collection: new Meteor.Collection('mutants')
-  
-  # Step 3
-  constructor: (params={}) ->
-    { @name, @power, @gender, @leader, @team_id } = params
     
-  # Step 4  
+  # Step 3
+  @field 'name', default: ''
+  @field 'power', default: undefined
+  @field 'gender', default: undefined
+   
+  # Step 4
   @validates 'name', presence: true, length: { in: [5..15] }
   @validates 'power', exclusion: { in: ['omnipotent'] }
   @validates 'gender', format: { with: /^(male|female)$/ }
@@ -46,11 +47,11 @@ class @Mutant extends TinyModel
       
 class @Team extends TinyModel
   @collection: new Meteor.Collection('teams')
-  
-  constructor: (params={}) ->
-    { @name, @leader } = params
     
   @has many: 'mutants', of_class: 'Mutant'
+  @has a: 'leader', of_class: 'Mutant'
+  @has an_embedded: 'headquarter', of_class: 'Location'
+  @has many_embedded: 'vehicles', of_class: 'Vehicle'
   
   @evil: ->
     @findOne( leader: 'Magneto' )

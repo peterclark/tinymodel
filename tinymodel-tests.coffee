@@ -2,8 +2,10 @@
 class @Mutant extends TinyModel
   @collection: new Meteor.Collection('mutants')
   
-  constructor: (params={}) ->
-    { @name, @power, @gender, @leader } = params
+  @field 'name', default: undefined
+  @field 'power', default: undefined
+  @field 'gender', default: undefined
+  @field 'leader', default: undefined
       
   @validates 'name', presence: true, length: { in: [5..15] }
   @validates 'power', exclusion: { in: ['omnipotent'] }

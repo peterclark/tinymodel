@@ -3,6 +3,18 @@ app = @
 class @TinyModel
   @collection: undefined
   errors: []
+  
+  constructor: (params={}) ->
+    for field,value of params
+      embedded = @constructor.an_embedded
+      if embedded? and embedded[field]?
+        klass = app[embedded[field]]
+        @[field] = new klass(value)
+      else if many_embedded? and many_embedded[field]?
+        klass = app[many_embedded[field]]
+        @[field] = (new klass(params) for params in value)
+      else
+        @[field] = value
     
   # Intialize the model.
   #
@@ -20,6 +32,9 @@ class @TinyModel
     obj.createdAt  = doc.createdAt
     obj.updatedAt  = doc.updatedAt
     obj
+    
+  @field: (name, options={}) ->
+    @::[name] = options.default
     
   @validates: (field, validations) ->
     # defining @validators class variable here instead of
@@ -47,6 +62,7 @@ class @TinyModel
       method_name     = options.a
       class_name      = options.of_class
       belongs_to_id   = "#{method_name}_id"
+      @::[belongs_to_id] = undefined
       # add an instance method named method_name to the class that
       # has the @has declaration in it.
       @::[method_name] = do( class_name, belongs_to_id ) ->
@@ -60,7 +76,19 @@ class @TinyModel
         (selector={}) -> 
           selector[has_many_id] = @_id
           app[class_name].all( selector )
-      
+    # an_embedded relationship
+    else if options.an_embedded? and options.of_class?
+      method_name = options.an_embedded
+      class_name  = options.of_class
+      @an_embedded or= []
+      @an_embedded[method_name] = class_name
+    # many_embedded relationship
+    else if options.many_embedded? and options.of_class
+      method_name = options.many_embedded
+      class_name  = options.of_class
+      @many_embedded or= []
+      @many_embedded[method_name] = class_name
+
   # Find all documents that match the selector.
   #
   # selector - selection criteria
@@ -300,7 +328,7 @@ class @TinyModel
   attributes: ->
     own   = Object.getOwnPropertyNames( @ )
     props = _.pick( @, own )
-    attrs = _.omit( props, '_id' )
+    attrs = _.omit( props, '_id', 'errors' )
    
   error: (field, message) ->
     @errors ||= []
