@@ -15,15 +15,15 @@ Tiny models for Meteor
 ```coffee
 # Step 1
 class @Mutant extends TinyModel
-  
+
   # Step 2
   @collection: new Meteor.Collection('mutants')
-    
+
   # Step 3
   @field 'name', default: ''
   @field 'power', default: undefined
   @field 'gender', default: undefined
-   
+
   # Step 4
   @validates 'name', presence: true, length: { in: [5..15] }
   @validates 'power', exclusion: { in: ['omnipotent'] }
@@ -31,45 +31,47 @@ class @Mutant extends TinyModel
   
   # Step 5
   @has a: 'team', of_class: 'Team'
-      
+
   # Step 6
   @male: ->
     @all( gender: 'male' )
-    
+
   @female: ->
     @all( gender: 'female' )
-    
+
   attack: ->
     if @power
       "#{@power} attack!"
     else
       "no power specified"
-      
+
 class @Team extends TinyModel
   @collection: new Meteor.Collection('teams')
-    
+
+  @field 'name', presence: true
+
   @has many: 'mutants', of_class: 'Mutant'
   @has a: 'leader', of_class: 'Mutant'
   @has an_embedded: 'headquarter', of_class: 'Location'
   @has many_embedded: 'vehicles', of_class: 'Vehicle'
-  
+
   @evil: ->
     @findOne( leader: 'Magneto' )
-    
+
   @good: ->
     @findOne( leader: 'Professor Xavier' )
-  
+
 ```
 ## Example
 
 ```coffee
-  xmen        = Team.insert( name: 'X-Men', leader: 'Professor Xavier' )
-  brotherhood = Team.insert( name: 'Brotherhood of Mutants', leader: 'Magneto' )
+  xmen        = Team.insert( name: 'X-Men' )
+  brotherhood = Team.insert( name: 'Brotherhood of Mutants' )
   wolverine   = Mutant.insert( name: 'Wolverine', gender: 'male', team_id: xmen._id )
-  
+
   xmen.mutants()
   # => [<Mutant name: 'Wolverine'...>]
-  
+
   wolverine.team()
   # => <Team name: 'X-Men'...>
 ```
@@ -85,7 +87,7 @@ class @Team extends TinyModel
   storm.insert()
 
   # or
-  
+
   Mutant.insert( name: 'Storm', leader: 'Xavier', gender: 'female', power: 'weather control' )
 ```
 
@@ -113,7 +115,7 @@ class @Team extends TinyModel
   storm.remove()
 
   # or
-  
+
   Mutant.remove( name: 'Storm' )
 ```
 
@@ -163,5 +165,3 @@ class @Team extends TinyModel
   s2._id
   # => '3JtvMuwgjktwQoyBb'
 ```
-
-    

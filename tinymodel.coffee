@@ -3,7 +3,7 @@ app = @
 class @TinyModel
   @collection: undefined
   errors: []
-  
+
   constructor: (params={}) ->
     for field,value of params
       embedded = @constructor.an_embedded
@@ -15,7 +15,7 @@ class @TinyModel
         @[field] = (new klass(params) for params in value)
       else
         @[field] = value
-    
+
   # Intialize the model.
   #
   # doc - the model attributes
@@ -25,17 +25,17 @@ class @TinyModel
   #   Car.new( color: 'blue' )
   #   # => <Car color: 'blue' ... >
   #
-  # Returns a model 
+  # Returns a model
   @new: (doc={}) ->
     obj            = new @(doc)
     obj._id        = doc._id
     obj.createdAt  = doc.createdAt
     obj.updatedAt  = doc.updatedAt
     obj
-    
+
   @field: (name, options={}) ->
     @::[name] = options.default
-    
+
   @validates: (field, validations) ->
     # defining @validators class variable here instead of
     # above so that @validators is shared between instances
@@ -55,7 +55,7 @@ class @TinyModel
           @validators.push new InclusionValidator(field, condition)
         when 'numericality'
           @validators.push new NumericalityValidator(field, condition)
-  
+
   @has: (options={}) ->
     # belongs_to relationship
     if options.a? and options.of_class?
@@ -67,13 +67,13 @@ class @TinyModel
       # has the @has declaration in it.
       @::[method_name] = do( class_name, belongs_to_id ) ->
         () -> app[class_name].findOne( _id: @[belongs_to_id] )
-    # has_many relationship    
+    # has_many relationship
     else if options.many? and options.of_class?
       method_name     = options.many
       class_name      = options.of_class
       has_many_id     = "#{@name.toLowerCase()}_id"
       @::[method_name] = do( class_name, has_many_id ) ->
-        (selector={}) -> 
+        (selector={}) ->
           selector[has_many_id] = @_id
           app[class_name].all( selector )
     # an_embedded relationship
@@ -98,12 +98,12 @@ class @TinyModel
   #   Car.find( color: 'red' )
   #   # => Cursor
   #
-  # Returns a cursor. Once cursor is iterated, returns models.  
+  # Returns a cursor. Once cursor is iterated, returns models.
   @find: (selector={}) ->
     options = {}
     options.transform = (doc) => @new( doc )
     @collection.find( selector, options )
-    
+
   # Find all documents that match the selector and initialize.
   #
   # selector - selection criteria
@@ -113,7 +113,7 @@ class @TinyModel
   #   Car.all( color: 'blue' )
   #   # => [Car, Car, Car]
   #
-  # Returns an array of models    
+  # Returns an array of models
   @all: (selector={}) ->
     @find( selector ).fetch()
 
@@ -126,7 +126,7 @@ class @TinyModel
   #   Car.findOne( color: 'blue' )
   #   # => <Car color: 'blue'...>
   #
-  # Returns one model       
+  # Returns one model
   @findOne: (selector={}) ->
     doc = @collection.findOne( selector )
     @new( doc ) if doc
@@ -140,11 +140,12 @@ class @TinyModel
   #   Car.insert( color: 'blue', spoiler: true )
   #   # => <Car _id: '123', color: 'blue', spoiler: true ...>
   #
-  # Returns one model     
+  # Returns one model
   @insert: (params={}) ->
     doc = new @( params )
     doc.updatedAt = doc.createdAt = new Date()
     return doc unless doc.isValid()
+    doc = _.omit(doc, 'errors')
     doc._id = @collection.insert( doc )
     doc
 
@@ -160,10 +161,10 @@ class @TinyModel
   #   Car.remove( {} )
   #   # => removes all documents
   #
-  # Returns number of documents removed 
+  # Returns number of documents removed
   @remove: (selector) ->
     @collection.remove( selector )
-    
+
   # Find the number of documents in the collection
   #
   # selector - selection criteria
@@ -176,7 +177,7 @@ class @TinyModel
   #   Car.count()
   #   # => total count of all documents
   #
-  # Returns a number         
+  # Returns a number
   @count: (selector={}) ->
     @collection.find( selector ).count()
 
@@ -187,13 +188,13 @@ class @TinyModel
   #   Car.toString()
   #   # => 'cars'
   #
-  # Returns a string     
+  # Returns a string
   @toString: ->
     @collection._name
-    
-  # Modified from - 
+
+  # Modified from -
   # https://coffeescript-cookbook.github.io/chapters/classes_and_objects/cloning
-  # 
+  #
   # Clone a model
   #
   # obj - the object to clone
@@ -209,7 +210,7 @@ class @TinyModel
       return obj
 
     if obj instanceof Date
-      return new Date( obj.getTime() ) 
+      return new Date( obj.getTime() )
 
     if obj instanceof RegExp
       flags = ''
@@ -217,18 +218,18 @@ class @TinyModel
       flags += 'i' if obj.ignoreCase?
       flags += 'm' if obj.multiline?
       flags += 'y' if obj.sticky?
-      return new RegExp(obj.source, flags) 
+      return new RegExp(obj.source, flags)
 
     newInstance = new obj.constructor()
 
     for key of obj
       if key == '_id'
         newInstance['_id'] = undefined
-      else 
+      else
         newInstance[key] = @clone( obj[key] )
 
     return @new( newInstance )
-    
+
   # Insert this model.
   #
   # Examples
@@ -256,7 +257,7 @@ class @TinyModel
   #   car.update()
   #   # => 1
   #
-  # Returns the # of documents updated or false if update failed      
+  # Returns the # of documents updated or false if update failed
   update: ->
     if @persisted()
       return false unless @isValid()
@@ -273,7 +274,7 @@ class @TinyModel
   #   car.remove()
   #   # => 1
   #
-  # Returns the # of documents removed 
+  # Returns the # of documents removed
   remove: ->
     if @persisted()
       @constructor.collection.remove( @_id )
@@ -288,16 +289,16 @@ class @TinyModel
   #   car.persisted()
   #   # => true
   #
-  # Returns true if document has an id, false otherwise     
+  # Returns true if document has an id, false otherwise
   persisted: ->
     @_id?
-  
-  # Runs all validators on this model   
+
+  # Runs all validators on this model
   validate: ->
     @constructor.validators or= []
     val.run(@) for val in @constructor.validators
     @errors.length == 0
-    
+
   # Check if this model is valid
   #
   # Examples
@@ -307,15 +308,15 @@ class @TinyModel
   #   car.isValid()
   #   # => true
   #
-  # Returns true if model has no errors, false otherwise   
+  # Returns true if model has no errors, false otherwise
   isValid: ->
     @errors = []
     @validate()
-    
+
   isInvalid: ->
     @errors = []
     not @validate()
-    
+
   # Get the own properties of this model
   #
   # Examples
@@ -324,33 +325,27 @@ class @TinyModel
   #   car.attributes()
   #   # => { color: 'blue' }
   #
-  # Returns an object with the models attributes   
+  # Returns an object with the models attributes
   attributes: ->
     own   = Object.getOwnPropertyNames( @ )
     props = _.pick( @, own )
     attrs = _.omit( props, '_id', 'errors' )
-   
+
   error: (field, message) ->
     @errors ||= []
     e = {}
     e[field] = message
     @errors.push e
-    
+
   hasErrors: ->
     @errors.length > 0
-    
+
   errorMessages: ->
     msg = []
     for i in @errors
       for key, value of i
         msg.push value
     msg.join(', ')
-    
+
   copy: (obj) ->
     @constructor.clone( @ )
-    
-    
-    
-    
-    
-    
