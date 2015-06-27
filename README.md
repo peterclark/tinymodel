@@ -1,4 +1,4 @@
-TinyModel [![Build Status](https://travis-ci.org/peterclark/tinymodel.svg?branch=master)](https://travis-ci.org/peterclark/tinymodel)
+TinyModel [![Build Status](https://travis-ci.org/peterclark/tinymodel.svg?branch=master)](https://travis-ci.org/peterclark/tinymodel) [![Code Climate](https://codeclimate.com/github/peterclark/tinymodel/badges/gpa.svg)](https://codeclimate.com/github/peterclark/tinymodel)
 =========
 
 Tiny models for Meteor
@@ -28,7 +28,7 @@ class @Mutant extends TinyModel
   @validates 'name', presence: true, length: { in: [5..15] }
   @validates 'power', exclusion: { in: ['omnipotent'] }
   @validates 'gender', format: { with: /^(male|female)$/ }
-  
+
   # Step 5
   @has a: 'team', of_class: 'Team'
 
