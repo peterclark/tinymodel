@@ -36,7 +36,8 @@ Package.onTest(function(api) {
     ], ['server']);
   api.addFiles(
     [
-      'tinymodel-tests.coffee',
+      'tests/_setup.coffee',
+      'tests/tests.coffee',
       'presence_validator.coffee',
       'length_validator.coffee',
       'exclusion_validator.coffee',

@@ -145,7 +145,6 @@ class @TinyModel
     doc = new @( params )
     doc.updatedAt = doc.createdAt = new Date()
     return doc unless doc.isValid()
-    doc = _.omit(doc, 'errors')
     doc._id = @collection.insert( doc )
     doc
 
