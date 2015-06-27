@@ -127,219 +127,139 @@ Tinytest.add 'toString - returns the collection name', (test) ->
   name = Mutant.toString()
   test.equal name, 'mutants'
 
-# ###########################
-# # TinyModel.clone()
-# ###########################
-# Tinytest.add 'TinyModel.clone( tm ) - returns a clone of Mutant', (test) ->
-#   copy = Mutant.clone( storm )
-#   test.equal copy.name, storm.name
-#   test.equal copy.createdAt, storm.createdAt
-#   test.equal copy.updatedAt, storm.updatedAt
-#
-# Tinytest.add 'TinyModel.clone( tm ) - is not persisted', (test) ->
-#   copy = Mutant.clone( storm )
-#   test.isUndefined copy._id
-#   test.isFalse copy.persisted()
-#
-# #####################
-# # TinyModel.remove()
-# #####################
-# Tinytest.add 'TinyModel.remove (with query) - destroys the Mutant', (test) ->
-#   Mutant.remove({})
-#   Mutant.insert( m_magneto )
-#   Mutant.remove( name: 'Magneto' )
-#   test.isUndefined Mutant.findOne( name: 'Magneto' )
-#
-# Tinytest.add 'TinyModel.remove (with query) - returns count', (test) ->
-#   Mutant.remove({})
-#   Mutant.insert( m_wolverine )
-#   count = Mutant.remove( name: 'Wolverine' )
-#   test.equal count, 1
-#
-# Tinytest.add 'TinyModel.remove( {} ) - destroys all Mutants', (test) ->
-#   count = Mutant.remove( {} )
-#   test.equal Mutant.all(), []
-#
-# #####################
-# # model.insert()
-# #####################
-#
-# Tinytest.add 'insert - inserts a Mutant', (test) ->
-#   Mutant.remove( {} )
-#   mutant = new Mutant( m_cyclops )
-#   mutant.insert()
-#   test.equal Mutant.count(), 1
-#
-# Tinytest.add 'insert - returns an id', (test) ->
-#   Mutant.remove( {} )
-#   mutant = new Mutant( m_cyclops )
-#   id = mutant.insert()
-#   test.matches id, /\S{17,}/
-#
-# Tinytest.add 'insert - sets timestamps', (test) ->
-#   Mutant.remove( {} )
-#   mutant = new Mutant( m_cyclops )
-#   id = mutant.insert()
-#   test.instanceOf mutant.createdAt, Date
-#   test.instanceOf mutant.updatedAt, Date
-#
-# Tinytest.add 'insert (invalid) - returns false', (test) ->
-#   Mutant.remove( {} )
-#   mutant = new Mutant( m_bo )
-#   id = mutant.insert()
-#   test.isFalse id
-#
-# Tinytest.add 'insert (invalid) - does not set timestamps', (test) ->
-#   Mutant.remove( {} )
-#   mutant = new Mutant( m_bo )
-#   id = mutant.insert()
-#   test.isUndefined mutant.createdAt
-#   test.isUndefined mutant.updatedAt
-#
-# Tinytest.add 'insert (persisted) - updates document', (test) ->
-#   Mutant.remove( {} )
-#   mutant = new Mutant( m_cyclops )
-#   id = mutant.insert()
-#   mutant.name = 'Gambit'
-#   mutant.insert()
-#   test.equal Mutant.findOne().name, 'Gambit'
-#
-# Tinytest.add 'insert (persisted, invalid) - returns false', (test) ->
-#   Mutant.remove( {} )
-#   mutant = new Mutant( m_cyclops )
-#   id = mutant.insert()
-#   mutant.name = 'Bo'
-#   id = mutant.insert()
-#   test.isFalse id
-#
-# Tinytest.add 'insert (persisted, invalid) - does not persist', (test) ->
-#   Mutant.remove( {} )
-#   mutant = new Mutant( m_cyclops )
-#   id = mutant.insert()
-#   mutant.name = 'Bo'
-#   id = mutant.insert()
-#   test.notEqual Mutant.findOne().name, 'Bo'
-#
-# #################
-# # model.update()
-# #################
-#
-# Tinytest.add 'update (not persisted) - return false', (test) ->
-#   Mutant.remove( {} )
-#   gambit = new Mutant
-#   gambit.name = 'Gambit'
-#   test.isFalse gambit.update()
-#
-# Tinytest.add 'update (peristed, invalid) - returns false', (test) ->
-#   Mutant.remove( {} )
-#   Mutant.insert( m_wolverine )
-#   wolverine = Mutant.findOne( name: 'Wolverine' )
-#   wolverine.name = ''
-#   test.isFalse wolverine.update()
-#
-# Tinytest.add 'update (persisted, valid) - updates document', (test) ->
-#   Mutant.remove( {} )
-#   Mutant.insert( m_wolverine )
-#   wolverine = Mutant.findOne( name: 'Wolverine' )
-#   wolverine.name = 'Cyclops'
-#   wolverine.update()
-#   test.equal Mutant.findOne().name, 'Cyclops'
-#
-# #################
-# # model.remove()
-# #################
-#
-# Tinytest.add 'remove (persisted) - removes the document', (test) ->
-#   Mutant.remove({})
-#   Mutant.insert( m_wolverine )
-#   nc = Mutant.findOne()
-#   nc.remove()
-#   test.isUndefined Mutant.findOne()
-#
-# Tinytest.add 'remove (persisted) - returns 1', (test) ->
-#   Mutant.remove({})
-#   Mutant.insert( m_magneto )
-#   m = Mutant.findOne()
-#   result = m.remove()
-#   test.equal result, 1
-#
-# Tinytest.add 'remove (not persisted) - returns false', (test) ->
-#   Mutant.remove({})
-#   mutant = new Mutant
-#   mutant.name = 'NightCrawler'
-#   test.isFalse mutant.remove()
-#
-# #################
-# # model.persisted()
-# #################
-#
-# Tinytest.add 'persisted - returns true', (test) ->
-#   Mutant.remove({})
-#   mutant = new Mutant( m_storm )
-#   mutant.insert()
-#   test.isTrue mutant.persisted()
-#
-# Tinytest.add 'not persisted - returns false', (test) ->
-#   Mutant.remove({})
-#   mutant = new Mutant
-#   mutant.name = 'NightCrawler'
-#   test.isFalse mutant.persisted()
-#
-# #################
-# # model.isValid()
-# #################
-#
-# Tinytest.add 'isValid (valid) - returns true', (test) ->
-#   Mutant.remove({})
-#   mutant = new Mutant( m_rogue )
-#   test.isTrue mutant.isValid()
-#
-# Tinytest.add 'isValid (invalid) - returns false', (test) ->
-#   Mutant.remove({})
-#   mutant = new Mutant
-#   mutant.name = 'Ed'
-#   test.isFalse mutant.isValid()
-#
-# ###################
-# # model.attributes()
-# ###################
-#
-# Tinytest.add 'attributes - returns attributes', (test) ->
-#   Mutant.remove({})
-#   Mutant.insert( name: 'Rogue', leader: 'Xavier', gender: 'female' )
-#   rogue = Mutant.findOne()
-#   test.equal rogue.attributes().name, 'Rogue'
-#   test.equal rogue.attributes().leader, 'Xavier'
-#   test.equal rogue.attributes().gender, 'female'
-#
-# ###################
-# # model.hasErrors()
-# ###################
-#
-# Tinytest.add 'hasErrors (invalid) - returns true', (test) ->
-#   Mutant.remove({})
-#   mutant = new Mutant
-#   mutant.isValid()
-#   test.isTrue mutant.hasErrors()
-#
-# Tinytest.add 'hasErrors (valid) - returns false', (test) ->
-#   Mutant.remove({})
-#   mutant = new Mutant
-#   mutant.name = 'Xavier'
-#   test.isFalse mutant.hasErrors()
-#
-# ###################
-# # model.errorMessages()
-# ###################
-#
-# Tinytest.add 'errorMessages (invalid) - returns error', (test) ->
-#   Mutant.remove({})
-#   mutant = new Mutant
-#   mutant.isValid()
-#   test.equal mutant.errorMessages(), 'name is missing, length of name must be between 5 and 50, gender is invalid'
-#
-# Tinytest.add 'errorMessages (valid) - returns empty string', (test) ->
-#   Mutant.remove({})
-#   mutant = new Mutant( m_magneto )
-#   mutant.isValid()
-#   test.equal mutant.errorMessages(), ''
+# clone
+
+Tinytest.add 'clone - returns a clone of Mutant', (test) ->
+  copy = Mutant.clone( storm )
+  test.equal copy.name, storm.name
+  test.equal copy.createdAt, storm.createdAt
+  test.equal copy.updatedAt, storm.updatedAt
+
+Tinytest.add 'clone - is not persisted', (test) ->
+  copy = Mutant.clone( storm )
+  test.isUndefined copy._id
+  test.isFalse copy.persisted()
+
+# remove
+
+Tinytest.add 'remove - destroys the Mutant', (test) ->
+  mutant = Mutant.insert( name: 'Magento', gender: 'male' )
+  test.isTrue mutant.persisted()
+  Mutant.remove( name: 'Magneto' )
+  test.isUndefined Mutant.findOne( name: 'Magneto' )
+
+# model.insert
+
+Tinytest.add 'model.insert - inserts a Mutant', (test) ->
+  colossus = new Mutant( name: 'Colossus', gender: 'male' )
+  colossus.insert()
+  mutant = Mutant.findOne( name: 'Colossus' )
+  test.equal mutant.name, colossus.name
+  test.matches mutant._id, /\S{17,}/
+  test.instanceOf mutant.createdAt, Date
+  test.instanceOf mutant.updatedAt, Date
+
+Tinytest.add 'model.insert (invalid) - returns false', (test) ->
+  mutant = new Mutant( name: '' )
+  id = mutant.insert()
+  test.isFalse id
+
+Tinytest.add 'model.insert (invalid) - does not set timestamps', (test) ->
+  mutant = new Mutant( name: '' )
+  mutant.insert()
+  test.isUndefined mutant.createdAt
+  test.isUndefined mutant.updatedAt
+
+Tinytest.add 'model.insert (persisted) - updates document', (test) ->
+  mutant = new Mutant( name: 'NightCrawler', gender: 'male' )
+  id = mutant.insert()
+  mutant.name = 'Gambit'
+  mutant.insert()
+  test.equal Mutant.findOne( _id: id ).name, 'Gambit'
+
+Tinytest.add 'model.insert (persisted, invalid) - fails', (test) ->
+  mutant = new Mutant( name: 'Cyclops', gender: 'male' )
+  id = mutant.insert()
+  mutant.name = ''
+  test.isFalse mutant.insert()
+  test.equal Mutant.findOne( _id: id ).name, 'Cyclops'
+
+# model.update
+
+Tinytest.add 'model.update (not persisted) - return false', (test) ->
+  gambit = new Mutant
+  gambit.name = 'Gambit'
+  test.isFalse gambit.update()
+
+Tinytest.add 'model.update (persisted, invalid) - returns false', (test) ->
+  rogue = Mutant.insert( name: 'Rogue', gender: 'female' )
+  rogue.name = ''
+  test.isFalse rogue.update()
+
+Tinytest.add 'model.update (persisted, valid) - updates document', (test) ->
+  ragnar = Mutant.insert( name: 'Ragnar', gender: 'male' )
+  ragnar.name = 'Clown'
+  ragnar.update()
+  test.equal Mutant.findOne( _id: ragnar._id ).name, 'Clown'
+
+# model.remove
+
+Tinytest.add 'model.remove (persisted) - removes the document', (test) ->
+  spiderman = Mutant.insert( name: 'Spiderman', gender: 'male' )
+  result = spiderman.remove()
+  test.isUndefined Mutant.findOne( _id: spiderman._id )
+  test.equal result, 1
+
+Tinytest.add 'model.remove (not persisted) - returns false', (test) ->
+  mutant = new Mutant( name: 'Robert' )
+  test.isFalse mutant.remove()
+
+# model.persisted
+
+Tinytest.add 'persisted - returns true', (test) ->
+  mutant = Mutant.findOne()
+  test.isTrue mutant.persisted()
+
+Tinytest.add 'persisted (new) - returns false', (test) ->
+  mutant = new Mutant( name: 'Alexander' )
+  test.isFalse mutant.persisted()
+
+# model.isValid
+
+Tinytest.add 'isValid (valid) - returns true', (test) ->
+  mutant = new Mutant( name: 'Tobias', gender: 'male' )
+  test.isTrue mutant.isValid()
+
+Tinytest.add 'isValid (invalid) - returns false', (test) ->
+  mutant = new Mutant( name: 'Z' )
+  test.isFalse mutant.isValid()
+
+# model.attributes
+
+Tinytest.add 'attributes - returns attributes', (test) ->
+  mutant = Mutant.findOne( name: 'Wolverine' )
+  test.equal mutant.attributes().name, 'Wolverine'
+  test.equal mutant.attributes().gender, 'male'
+
+# model.hasErrors
+
+Tinytest.add 'hasErrors (invalid) - returns true', (test) ->
+  mutant = new Mutant
+  mutant.isValid()
+  test.isTrue mutant.hasErrors()
+
+Tinytest.add 'hasErrors (valid) - returns false', (test) ->
+  mutant = new Mutant( name: 'George', gender: 'male' )
+  test.isFalse mutant.hasErrors()
+
+# model.errorMessages
+
+Tinytest.add 'errorMessages (invalid) - returns error', (test) ->
+  mutant = new Mutant
+  mutant.isValid()
+  test.equal mutant.errorMessages(), 'name is missing, length of name must be between 5 and 50, gender is invalid'
+
+Tinytest.add 'errorMessages (valid) - returns empty string', (test) ->
+  mutant = new Mutant( name: 'Gregory', gender: 'female' )
+  mutant.isValid()
+  test.equal mutant.errorMessages(), ''
