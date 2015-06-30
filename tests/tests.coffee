@@ -15,7 +15,9 @@ Tinytest.add 'has an_embedded - team has an embedded headquarter', (test) ->
   test.equal xmen.headquarter.name, xmansion.name
 
 Tinytest.add 'has many_embedded - team has many embedded vehicles', (test) ->
-  test.equal xmen.vehicles, [blackbird, aston]
+  xmen_vehicle_names = (vehicle.name for vehicle in xmen.vehicles)
+  vehicle_names = (vehicle.name for vehicle in [blackbird, aston])
+  test.equal xmen_vehicle_names, vehicle_names
 
 # all
 

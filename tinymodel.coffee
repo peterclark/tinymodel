@@ -6,12 +6,11 @@ class @TinyModel
 
   constructor: (params={}) ->
     for field,value of params
-      embedded = @constructor.an_embedded
-      if embedded? and embedded[field]?
-        klass = app[embedded[field]]
+      if @constructor.an_embedded? and @constructor.an_embedded[field]?
+        klass = app[@constructor.an_embedded[field]]
         @[field] = new klass(value)
-      else if many_embedded? and many_embedded[field]?
-        klass = app[many_embedded[field]]
+      else if @constructor.many_embedded? and @constructor.many_embedded[field]?
+        klass = app[@constructor.many_embedded[field]]
         @[field] = (new klass(params) for params in value)
       else
         @[field] = value
