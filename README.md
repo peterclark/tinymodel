@@ -48,7 +48,9 @@ class @Mutant extends TinyModel
 class @Team extends TinyModel
   @collection: new Meteor.Collection('teams')
 
-  @field 'name', presence: true
+  @field 'name'
+
+  @validates 'name', presence: true
 
   @has many: 'mutants', of_class: 'Mutant'
   @has a: 'leader', of_class: 'Mutant'
