@@ -12,7 +12,7 @@ Package.onUse(function(api) {
     [
       'underscore',
       'coffeescript',
-      'taskputty:underscore.string'],
+      'taskputty:underscore.string@3.0.3_5'],
       ['client', 'server']);
   api.addFiles(
     [
