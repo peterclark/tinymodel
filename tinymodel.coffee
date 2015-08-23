@@ -98,8 +98,7 @@ class @TinyModel
   #   # => Cursor
   #
   # Returns a cursor. Once cursor is iterated, returns models.
-  @find: (selector={}) ->
-    options = {}
+  @find: (selector={}, options={}) ->
     options.transform = (doc) => @new( doc )
     @collection.find( selector, options )
 
@@ -113,8 +112,8 @@ class @TinyModel
   #   # => [Car, Car, Car]
   #
   # Returns an array of models
-  @all: (selector={}) ->
-    @find( selector ).fetch()
+  @all: (selector={}, options={}) ->
+    @find( selector, options ).fetch()
 
   # Find first document that match the selector and initialize.
   #

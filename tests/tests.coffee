@@ -33,6 +33,16 @@ Tinytest.add 'all (with query) - returns subset', (test) ->
   mutants = Mutant.all( name: /to/ )
   test.length mutants, 1
 
+# all with options
+
+Tinytest.add 'all - ascending sort', (test) ->
+  mutants = Mutant.all( {}, { sort: { name: 1 }} )
+  test.equal mutants[0].name, "Professor Xavier"
+
+Tinytest.add 'all - descending sort', (test) ->
+  mutants = Mutant.all( {}, { sort: { name: -1 }} )
+  test.equal mutants[0].name, "Wolverine"
+
 # find
 
 Tinytest.add 'find - returns a cursor', (test) ->
@@ -50,6 +60,16 @@ Tinytest.add 'find - returns subset', (test) ->
 Tinytest.add 'find - transforms to Mutant', (test) ->
   mutants = Mutant.find( {} )
   test.instanceOf mutants.fetch()[0], Mutant
+
+# find with options
+
+Tinytest.add 'find - ascending sort', (test) ->
+  mutants = Mutant.find( {}, { sort: { name: 1 }})
+  test.equal mutants.fetch()[0].name, "Professor Xavier"
+
+Tinytest.add 'find - descending sort', (test) ->
+  mutants = Mutant.find( {}, { sort: { name: -1 }})
+  test.equal mutants.fetch()[0].name, "Wolverine"
 
 # insert
 
